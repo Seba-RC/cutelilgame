@@ -7,7 +7,8 @@ class Player extends Schema {}
 defineTypes(Player, {
     x: "number",
     y: "number",
-    flipX: "boolean"
+    flipX: "boolean",
+    spriteKey: "string"
 });
 
 class MyState extends Schema {
@@ -37,9 +38,11 @@ class GooberRoom extends colyseus.Room {
 
     onJoin(client, options) {
         console.log(client.sessionId, "joined!");
+        this.playerCount++;
         const player = new Player();
         player.x = 5400;
         player.y = 7000;
+        player.spriteKey = (this.playerCount === 1) ? 'goober' : 'shamk';
         this.state.players.set(client.sessionId, player);
     }
 

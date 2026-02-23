@@ -158,8 +158,61 @@ function update() {
 
 async function connect(scene) {
     scene.Client = new Colyseus.Client(endpoint);
-    console.log("Connecting to server at", endpoint);
-    const room = await scene.Client.joinOrCreate("my_room");
-    console.log("Joined room:", room.name);
 
+    try {
+        const room = await scene.Client.joinOrCreate("my_room");
+        scene.room = room;
+        scene.otherPlayers = {};
+
+        const callbacks = Colyseus.Callbacks.get(room);
+
+        // --- LISTEN FOR PLAYERS BEING ADDED ---
+        callbacks.onAdd("players", (player, sessionId) => {
+            if (sessionId === room.sessionId) return;
+
+            console.log("Player joined:", sessionId);
+
+            // Create the sprite and store it
+            const shadowGoober = scene.add.sprite(player.x, player.y, player.spriteKey).setScale(0.2);
+            scene.otherPlayers[sessionId] = shadowGoober;
+
+            let moveTween;
+
+            // Movement listeners for THIS specific player
+            callbacks.listen(player, "x", (value) => {
+                if (moveTween) moveTween.stop();
+                moveTween = scene.tweens.add({
+                    targets: shadowGoober,
+                    x: value,
+                    duration: 100,
+                    ease: 'Linear'
+                });
+            });
+
+            callbacks.listen(player, "y", (value) => {
+                scene.tweens.add({
+                    targets: shadowGoober,
+                    y: value,
+                    duration: 100,
+                    ease: 'Linear'
+                });
+            });
+
+            callbacks.listen(player, "flipX", (value) => {
+                shadowGoober.setFlipX(value);
+            });
+        }); 
+
+        // --- LISTEN FOR PLAYERS LEAVING ---
+        callbacks.onRemove("players", (player, sessionId) => {
+            if (scene.otherPlayers[sessionId]) {
+                scene.otherPlayers[sessionId].destroy();
+                delete scene.otherPlayers[sessionId];
+                console.log("Player left:", sessionId);
+            }
+        });
+
+    } catch (e) { 
+        console.error("Connection Error:", e);
+    }
 }
