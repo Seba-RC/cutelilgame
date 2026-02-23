@@ -1,7 +1,6 @@
 const colyseus = require('colyseus');
 const schema = require('@colyseus/schema');
 
-// In v2, we destructure these directly
 const { Schema, MapSchema, defineTypes } = schema;
 
 class Player extends Schema {}
@@ -23,8 +22,8 @@ defineTypes(MyState, {
 
 class GooberRoom extends colyseus.Room {
     onCreate(options) {
-        this.setState(new MyState());
-        console.log("🏠 Room Created!", this.roomId)
+        this.state = (new MyState());
+        console.log("Room created as:", this.roomId)
 
         this.onMessage("move", (client, data) => {
             const player = this.state.players.get(client.sessionId);

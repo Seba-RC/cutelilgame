@@ -36,9 +36,8 @@ const endpoint = `${protocol}//${window.location.host}`;
 let client;
 
 
-
-
 function preload() {
+
     // load assets!
     //map
     this.load.tilemapTiledJSON('map', './assets/level1.json');
@@ -95,7 +94,7 @@ function create() {
 
     console.log("Phaser 'create' started. Calling connect...");
 
-    connect(this);
+    connect(this)
 
     }
 
@@ -158,24 +157,9 @@ function update() {
 }
 
 async function connect(scene) {
+    scene.Client = new Colyseus.Client(endpoint);
+    console.log("Connecting to server at", endpoint);
+    const room = await scene.client.joinOrCreate("my_room");
+    console.log("Joined room:", room.name);
 
-    // Check for the global variable created by the browser bundle
-    console.log("Requesting Seat...");
-    const ColyseusSDK = window.Colyseus; 
-    if (scene.room) return;
-    if (!client) {
-        // In the browser bundle, the constructor is usually just Colyseus.Client
-        client = new ColyseusSDK.Client(endpoint);
-    }
-
-    try {
-        const room = await client.joinOrCreate("my_room");
-        scene.room = room;
-        console.log("Multiplayer connected!");
-        
-        // ... rest of your player logic ...
-    } catch (e) {
-        console.error("Connection error:", e);
-    }
 }
-

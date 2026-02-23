@@ -11,9 +11,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "colyseus": "^0.15.0",
-    "@colyseus/schema": "^2.0.0",
-    "@colyseus/ws-transport": "^0.15.0",
+    "colyseus": "^0.17.0",
+    "@colyseus/schema": "^4.0.0",
+    "@colyseus/ws-transport": "^0.17.0",
     "express": "^4.21.0"
   }
 
