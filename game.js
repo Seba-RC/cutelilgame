@@ -30,6 +30,14 @@ var jumpCounter = 0; // variable to track the number of jumps
 
 var dashCounter = 0; // variable to track the number of dashes
 
+const protocol = window.location.protocol.replace("http", "ws");
+const endpoint = `${protocol}//${window.location.host}`;
+
+let client;
+
+
+
+
 function preload() {
     // load assets!
     //map
@@ -85,6 +93,10 @@ function create() {
 
     cursors = this.input.keyboard.createCursorKeys(); // sets up input 
 
+    console.log("Phaser 'create' started. Calling connect...");
+
+    connect(this);
+
     }
 
 function update() {
@@ -139,5 +151,30 @@ function update() {
     this.input.keyboard.on('keydown-R', function () {
         player.setPosition(5400, 7000); // resets player position to the hard coded coordinates
     });
+
+    if (this.room && (player.body.velocity.x !== 0 || player.body.velocity.y !== 0)) {
+        this.room.send("move", { x: player.x, y: player.y });
+    }
+}
+
+async function connect(scene) {
+    // Check for the global variable created by the browser bundle
+    console.log("Requesting Seat...");
+    const ColyseusSDK = window.Colyseus; 
+    if (scene.room) return;
+    if (!client) {
+        // In the browser bundle, the constructor is usually just Colyseus.Client
+        client = new ColyseusSDK.Client(endpoint);
+    }
+
+    try {
+        const room = await client.joinOrCreate("my_room");
+        scene.room = room;
+        console.log("Multiplayer connected!");
+        
+        // ... rest of your player logic ...
+    } catch (e) {
+        console.error("Connection error:", e);
+    }
 }
 

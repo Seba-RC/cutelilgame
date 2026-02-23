@@ -11,7 +11,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@colyseus/schema": "^4.0.14",
+    "colyseus": "^0.17.8",
     "express": "^5.2.1"
-  
   }
 }

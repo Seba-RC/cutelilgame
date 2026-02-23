@@ -3,11 +3,11 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 8080;
 
-// Serve your assets and js files
+// Serve assets and js files
 app.use(express.static(path.join(__dirname, '/')));
 
 // Send index.html when someone visits the site
-app.get('(.*)', (req, res) => {
+app.get('*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
