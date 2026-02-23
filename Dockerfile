@@ -1,7 +1,7 @@
 FROM node:18-alpine
 WORKDIR /app
 
-ENV HOST 0.0.0.0
+ENV HOST=0.0.0.0
 
 COPY package*.json ./
 RUN npm install

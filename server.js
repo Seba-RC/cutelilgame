@@ -7,10 +7,10 @@ const port = process.env.PORT || 8080;
 app.use(express.static(path.join(__dirname, '/')));
 
 // Send index.html when someone visits the site
-app.get('*', (req, res) => {
+app.get('(.*)', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0',() => {
   console.log(`Goober is live on port ${port}`);
 });
