@@ -159,7 +159,7 @@ function update() {
 async function connect(scene) {
     scene.Client = new Colyseus.Client(endpoint);
     console.log("Connecting to server at", endpoint);
-    const room = await scene.client.joinOrCreate("my_room");
+    const room = await scene.Client.joinOrCreate("my_room");
     console.log("Joined room:", room.name);
 
 }
