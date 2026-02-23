@@ -158,6 +158,7 @@ function update() {
 }
 
 async function connect(scene) {
+
     // Check for the global variable created by the browser bundle
     console.log("Requesting Seat...");
     const ColyseusSDK = window.Colyseus; 

@@ -1,36 +1,46 @@
 const colyseus = require('colyseus');
 const schema = require('@colyseus/schema');
 
-class Player extends schema.Schema {}
-schema.defineTypes(Player, {
+// In v2, we destructure these directly
+const { Schema, MapSchema, defineTypes } = schema;
+
+class Player extends Schema {}
+defineTypes(Player, {
     x: "number",
-    y: "number"
+    y: "number",
+    flipX: "boolean"
 });
 
-class RoomState extends schema.Schema {
+class MyState extends Schema {
     constructor() {
         super();
-        this.players = new schema.MapSchema();
+        this.players = new MapSchema();
     }
 }
+defineTypes(MyState, {
+    players: { map: Player }
+});
 
-class MyRoom extends colyseus.Room {
+class GooberRoom extends colyseus.Room {
     onCreate(options) {
-        this.state = (new RoomState());
+        this.setState(new MyState());
+        console.log("🏠 Room Created!", this.roomId)
 
-        // When a player tells the server they moved
         this.onMessage("move", (client, data) => {
             const player = this.state.players.get(client.sessionId);
-            player.x = data.x;
-            player.y = data.y;
+            if (player) {
+                player.x = data.x;
+                player.y = data.y;
+                player.flipX = data.flipX;
+            }
         });
     }
 
     onJoin(client, options) {
         console.log(client.sessionId, "joined!");
         const player = new Player();
-        player.x = 500; // Starting X
-        player.y = 500; // Starting Y
+        player.x = 5400;
+        player.y = 7000;
         this.state.players.set(client.sessionId, player);
     }
 

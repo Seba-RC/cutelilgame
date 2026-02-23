@@ -1,16 +1,35 @@
 const express = require('express');
+const colyseus = require("colyseus");
+const http = require("http");
 const path = require('path');
+const { WebSocketTransport } = require("@colyseus/ws-transport");
+const GooberRoom = require('./GooberRoom');
+
 const app = express();
 const port = process.env.PORT || 8080;
 
-// Serve assets and js files
+// This helps the Matchmaker read the "join" request
+app.use(express.json());
+
+const httpServer = http.createServer(app);
+
+const transport = new WebSocketTransport({
+    server: httpServer,
+});
+
+const gameServer = new colyseus.Server({
+    transport: transport 
+});
+
+
+gameServer.define('my_room', GooberRoom);
+
 app.use(express.static(path.join(__dirname, '/')));
 
-// Send index.html when someone visits the site
-app.get('*splat', (req, res) => {
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(port, '0.0.0.0',() => {
-  console.log(`Goober is live on port ${port}`);
+httpServer.listen(port, '0.0.0.0', () => {
+  console.log(`Server is listening on port ${port}`);
 });
